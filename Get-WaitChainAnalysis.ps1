@@ -32,7 +32,7 @@ else {
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
             }
-            else if (x86) {
+            elseif (x86) {
                 Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
                 $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x86 })
                 # Wait for the build job to finish
