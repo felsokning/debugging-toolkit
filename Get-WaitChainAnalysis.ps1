@@ -4,11 +4,11 @@ param(
     [Parameter(ParameterSetName = 'x64')]
     [Parameter(ParameterSetName = 'x86')]
     $Process,
-    [switch]
     [Parameter(ParameterSetName = 'x64')]
-    x64,
     [switch]
+    x64,
     [Parameter(ParameterSetName = 'x86')]
+    [switch]
     x86
 )
 # Future-proofing for Linux Support (long time aways but better to plan now)
