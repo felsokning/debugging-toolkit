@@ -13,6 +13,6 @@ jobs:
         - name: Test PowerShell JIT'ing
           run: |
             $PSVersionTable
-            .\Get-WaitChainAnalysis.ps1 -Process powershell -x64
+            .\Get-WaitChainAnalysis.ps1 -Process powershell -x64:$true
           shell: pwsh
           working-directory: ${{ github.workspace }}
