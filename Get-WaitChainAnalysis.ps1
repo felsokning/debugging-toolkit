@@ -8,6 +8,9 @@ param(
     [Parameter(ParameterSetName = 'x86')]
     [switch]$x86
 )
+
+Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $([System.Environment]::OSVersion.VersionString)"
+
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
 if (-not ([System.OperatingSystem]::IsWindows())) {
