@@ -11,8 +11,6 @@ jobs:
         - name: Check out code
           uses: actions/checkout@v7
         - name: Test PowerShell JIT'ing
-          run: |
-            Get-ChildItem
-            ./Get-WaitChainAnalysis.ps1 -Process "powershell" -x64 -Verbose
+          run: .\Get-WaitChainAnalysis.ps1 -Process "powershell" -x64 -Verbose
           shell: pwsh
           working-directory: ${{ github.workspace }}
