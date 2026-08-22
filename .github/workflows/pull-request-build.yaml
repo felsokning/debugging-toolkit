@@ -1,0 +1,16 @@
+name: Build
+
+on:
+    pull_request:
+        types: [opened, reopened, edited, synchronize, ready_for_review]
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    steps:
+        - name: Check out code
+          uses: actions/checkout@v7
+        - name: Test PowerShell JIT'ing
+          run: Get-WaitChainAnalysis.ps1 -Process "powershell" -x64 -Verbose
+          shell: pwsh
+          working-directory: ${{ github.workspace }}
