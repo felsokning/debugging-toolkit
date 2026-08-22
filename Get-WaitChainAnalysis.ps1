@@ -1,15 +1,12 @@
 param(
     [ValidateNotNullOrWhitespace()]
-    [string]
     [Parameter(ParameterSetName = 'x64')]
     [Parameter(ParameterSetName = 'x86')]
-    $Process,
+    [string]$Process,
     [Parameter(ParameterSetName = 'x64')]
-    [switch]
-    x64,
+    [switch]x64,
     [Parameter(ParameterSetName = 'x86')]
-    [switch]
-    x86
+    [switch]x86
 )
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
