@@ -41,7 +41,7 @@ else {
                 $buildCppJob | Format-List
                 $result = $(Receive-Job -Job $buildCppJob)
                 Write-Host -ForegroundColor Green "Build job completed successfully. Output:"
-                result
+                $result
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
