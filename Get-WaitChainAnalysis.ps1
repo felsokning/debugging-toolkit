@@ -38,7 +38,7 @@ else {
                     break;
                 }
 
-                $buildJob | Receive-Job -Wait -AutoRemoveJob
+                $buildJob
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
