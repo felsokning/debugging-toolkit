@@ -43,7 +43,7 @@ else {
                 Write-Host -ForegroundColor Green "Build job completed successfully. Output:"
                 $result
 
-                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
+                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
                 break;
             }
             elseif ($x86) {
@@ -60,7 +60,7 @@ else {
                     break;
                 }
 
-                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x86$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
+                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x86$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
                 break;
             }
             else {
