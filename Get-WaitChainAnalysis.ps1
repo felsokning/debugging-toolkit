@@ -20,14 +20,14 @@ $toolset = [string]::Empty
 $installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
 Write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
 
-if ($installationPath -contains "18")
+if ($installationPath.Contains("18"))
 {
-    Write-Host -ForegroundColor Green "Visual Studio 2026 detected. Using v142 toolset."
+    Write-Host -ForegroundColor Green "Visual Studio 2026 detected. Using v145 toolset."
     $buildVersion = "10.0.26100.0"
     $toolset = "v145"
 }
 
-if($installationPath -contains "2022")
+if($installationPath.Contains("2022"))
 {
     Write-Host -ForegroundColor Green "Visual Studio 2022 detected. Using v143 toolset."
     $buildVersion = "10.0.22621.0"
