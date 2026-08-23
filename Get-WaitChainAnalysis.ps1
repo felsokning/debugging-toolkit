@@ -38,6 +38,8 @@ else {
                     break;
                 }
 
+                Receive-Job -Job $buildJob
+
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
             }
