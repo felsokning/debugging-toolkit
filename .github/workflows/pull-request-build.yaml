@@ -15,7 +15,7 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-  build-on-2023:
+  build-on-2022:
     runs-on: windows-2022
     steps:
         - name: Check out code

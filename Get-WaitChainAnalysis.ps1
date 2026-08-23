@@ -69,7 +69,6 @@ else {
         if (Test-Path -Path $AssemblyPath -PathType Leaf) {
             Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
             $AssemblyBuilt = $true
-            break
         }
         else {
             Write-Warning -Message "Build may have failed — DLL not found at expected path. Trying next flavour..."
