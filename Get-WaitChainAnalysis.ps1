@@ -66,6 +66,10 @@ else {
     }
 }
 
+$AssemblyPath
+
+Test-Path -Path $AssemblyPath -PathType Leaf -ErrorAction Stop
+
 $Source = @"
     namespace Testing
     {
