@@ -24,7 +24,7 @@ else {
         # VS2026
         if (Test-Path -Path "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
             Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
-            if (x64) {
+            if ($x64) {
                 $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x64 })
                 # Wait for the build job to finish
                 while($($buildJob.State -ne "Completed") -or $($buildJob.State -ne "Failed")) {
@@ -35,7 +35,7 @@ else {
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
             }
-            elseif (x86) {
+            elseif ($x86) {
                 Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
                 $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x86 })
                 # Wait for the build job to finish
