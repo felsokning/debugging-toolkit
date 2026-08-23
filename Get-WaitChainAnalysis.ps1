@@ -39,7 +39,9 @@ else {
                 }
 
                 $buildCppJob | Format-List
-                Receive-Job -Job $buildCppJob
+                $result = $(Receive-Job -Job $buildCppJob)
+                Write-Host -ForegroundColor Green "Build job completed successfully. Output:"
+                Write-Object -InputObject $result
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
