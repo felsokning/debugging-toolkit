@@ -118,6 +118,6 @@ else
     }
     else
     {
-        return "No process can be found with the name given :$($Process)"
+        return "No process can be found with the name given: $($Process)"
     }
 }
