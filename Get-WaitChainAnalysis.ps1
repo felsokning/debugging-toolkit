@@ -12,10 +12,27 @@ param(
 $osVersionString = $([System.Environment]::OSVersion.VersionString)
 Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $($osVersionString)"
 
-$installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
-write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
+$buildVersion = $([System.Environment]::OSVersion.Version.ToString())
+Write-Host -ForegroundColor Green "OS BuildVersion: $($buildVersion)"
 
-$windowsSdkVersion = $($(Get-Item "HKLM:\SOFTWARE\Microsoft\Microsoft SDKs\Windows").GetValue("CurrentVersion"))
+$toolset = [string]::Empty
+
+$installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
+Write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
+
+if ($installationPath -contains "18")
+{
+    Write-Host -ForegroundColor Green "Visual Studio 2026 detected. Using v142 toolset."
+    $buildVersion = "10.0.26100.0"
+    $toolset = "v145"
+}
+
+if($installationPath -contains "2022")
+{
+    Write-Host -ForegroundColor Green "Visual Studio 2022 detected. Using v143 toolset."
+    $buildVersion = "10.0.22621.0"
+    $toolset = "v143"
+}
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
@@ -47,7 +64,7 @@ else {
         # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
         $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
         Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
-        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($windowsSdkVersion) /p:PlatformToolset=v145"
+        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=$($toolset)"
 
         if (Test-Path -Path $AssemblyPath -PathType Leaf) {
             Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
