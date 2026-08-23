@@ -39,6 +39,7 @@ else {
                 }
 
                 $buildCppJob | Format-List
+                Receive-Job -Job $buildCppJob
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
