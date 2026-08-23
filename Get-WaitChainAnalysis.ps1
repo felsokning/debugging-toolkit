@@ -70,6 +70,8 @@ $AssemblyPath
 
 Test-Path -Path $AssemblyPath -PathType Leaf -ErrorAction Stop
 
+Get-ChildItem -Path $PWD -Recurse
+
 $Source = @"
     namespace Testing
     {
