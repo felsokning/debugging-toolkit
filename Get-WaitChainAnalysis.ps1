@@ -74,13 +74,13 @@ $Source = @"
 
         public static class Debug
         {
-            [DllImport(@"$($AssemblyPath)", EntryPoint = "WctEntry")]
-            public static extern IntPtr ExternalEntry(int id);
+            [DllImport(@"$($AssemblyPath)")]
+            public static extern IntPtr WctEntry(int id);
 
             public static string GetThreadWaitChain(int id)
             {
                 IntPtr returnIntPtr = IntPtr.Zero;
-                returnIntPtr = ExternalEntry(id);
+                returnIntPtr = WctEntry(id);
                 if(returnIntPtr != IntPtr.Zero)
                 {
                     return Marshal.PtrToStringUni(returnIntPtr);
