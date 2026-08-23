@@ -35,31 +35,11 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-  build-2019:
-    runs-on: windows-2022
+  build-on-2019:
+    runs-on: windows-2019
     steps:
         - name: Check out code
           uses: actions/checkout@v7
-        - name: Set up Docker
-          uses: docker/setup-docker-action@v5
-          with:
-            daemon-config: |
-              {
-                "debug": true,
-                "features": {
-                  "containerd-snapshotter": true
-                }
-              }
-        - name: Set up QEMU
-          uses: docker/setup-qemu-action@v4
-        - name: Build Docker Image
-          run: |
-            docker build -t waitchainanalysis .
-  build-on-2019:
-    runs-on: windows-2022
-    container:
-      image: waitchainanalysis:latest
-    steps:
         - name: Test PowerShell JIT'ing
           run: |
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
