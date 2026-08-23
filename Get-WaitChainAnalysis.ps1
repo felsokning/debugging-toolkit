@@ -26,9 +26,9 @@ else {
         if (Test-Path -Path "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
             Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
             if ($x64) {
-                $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x64 })
+                $buildJob = Start-Job -ScriptBlock { "C:$($using:directorySeparator)Program Files$($using:directorySeparator)Microsoft Visual Studio$($using:directorySeparator)18$($using:directorySeparator)$($using:flavour)$($using:directorySeparator)Common7$($using:directorySeparator)Tools$($using:directorySeparator)VsDevCmd.bat"; msbuild "$($using:PWD)$($using:directorySeparator)src$($using:directorySeparator)cpp$($using:directorySeparator)UnmanagedDebugging.vcxproj" $($using:directorySeparator)p:configuration=release $($using:directorySeparator)p:platform=x64 }
                 # Wait for the build job to finish
-                while($($buildJob.State -ne "Completed") -and $($buildJob.State -ne "Failed")) {
+                while($buildJob.State -ne "Completed" -and $buildJob.State -ne "Failed") {
                     Write-Host "Waiting 5 seconds for the build job to complete... State: $($buildJob.State)"
                     Start-Sleep -Seconds 5
                 }
@@ -74,7 +74,7 @@ $Source = @"
 
         public static class Debug
         {
-            [DllImport($($AssemblyPath))]
+            [DllImport($($using:AssemblyPath))]
             public static extern IntPtr ExternalEntry(int id);
 
             public static string GetThreadWaitChain(int id)
