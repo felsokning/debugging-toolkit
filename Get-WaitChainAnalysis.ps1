@@ -15,7 +15,7 @@ Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) 
 $installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
 write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
 
-$windowsSdkVersion = $($(Get-Item "hklm:\SOFTWARE\Microsoft\Microsoft SDKs\Windows").GetValue("CurrentVersion"))
+$windowsSdkVersion = $($(Get-Item "HKLM:\SOFTWARE\Microsoft\Microsoft SDKs\Windows").GetValue("CurrentVersion"))
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
