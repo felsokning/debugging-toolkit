@@ -12,11 +12,10 @@ param(
 $osVersionString = $([System.Environment]::OSVersion.VersionString)
 Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $($osVersionString)"
 
-$buildVersion = $([System.Environment]::OSVersion.Version.ToString())
-Write-Host -ForegroundColor Green "OS BuildVersion: $($buildVersion)"
-
 $installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
 write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
+
+$windowsSdkVersion = $($(Get-Item "hklm:\SOFTWARE\Microsoft\Microsoft SDKs\Windows").GetValue("CurrentVersion"))
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
@@ -27,7 +26,7 @@ if (-not ([System.OperatingSystem]::IsWindows())) {
 }
 else {
     if (Test-Path -Path "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
-        Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour) for Visual Studio 2026. Attempting to build the UnmanagedDebugging.dll..."
+        Write-Host -ForegroundColor Green "Found VsDevCmd.bat for Visual Studio. Attempting to build the UnmanagedDebugging.dll..."
 
         $vsDevCmdPath = "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
         $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
@@ -48,7 +47,7 @@ else {
         # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
         $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
         Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
-        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=v145"
+        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($windowsSdkVersion) /p:PlatformToolset=v145"
 
         if (Test-Path -Path $AssemblyPath -PathType Leaf) {
             Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
