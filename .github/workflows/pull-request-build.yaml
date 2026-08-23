@@ -56,9 +56,9 @@ jobs:
           run: |
             docker build -t waitchainanalysis .
   build-on-2019:
-    runs-on: windows-2022
-    container:
-      image: waitchainanalysis:latest
+    runs-on:
+      container:
+        image: waitchainanalysis:latest
     steps:
         - name: Test PowerShell JIT'ing
           run: |
