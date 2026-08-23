@@ -113,7 +113,7 @@ else
         $sb = @()
         foreach($po in $processOBj)
         {
-            $po | Get-Member -MemberType NoteProperty
+            $po
             $sb += [Testing.Debug]::GetThreadWaitChain($po.Id)
         }
         return $sb
