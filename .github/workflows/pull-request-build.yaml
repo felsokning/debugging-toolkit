@@ -35,7 +35,7 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-    build-on-2019:
+    build-2019:
     runs-on: windows-2022
     steps:
         - name: Check out code
@@ -55,9 +55,11 @@ jobs:
         - name: Build Docker Image
           run: |
             docker build -t waitchainanalysis .
+    build-on-2019:
+    runs-on: waitchainanalysis
+    steps:
         - name: Test PowerShell JIT'ing
           run: |
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
-          runs-on: waitchainanalysis:latest
           shell: pwsh
           working-directory: ${{ github.workspace }}
