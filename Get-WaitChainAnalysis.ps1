@@ -74,7 +74,7 @@ $Source = @"
 
         public static class Debug
         {
-            [DllImport(\"$($AssemblyPath)\")]
+            [DllImport("$($AssemblyPath)")]
             public static extern IntPtr ExternalEntry(int id);
 
             public static string GetThreadWaitChain(int id)
