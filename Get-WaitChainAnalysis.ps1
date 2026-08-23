@@ -12,9 +12,8 @@ param(
 $osVersionString = $([System.Environment]::OSVersion.VersionString)
 Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $($osVersionString)"
 
-$fileVersionInfo = $([System.Diagnostics.FileVersionInfo]::GetVersionInfo("C:\Windows\System32\kernel32.dll"))
-$fileVersion = $fileVersionInfo.FileVersion
-Write-Host -ForegroundColor Green "Kernel32.dll Version: $($fileVersion)"
+$buildVersion = $([System.Environment]::OSVersion.Version.ToString())
+Write-Host -ForegroundColor Green "OS BuildVersion: $($buildVersion)"
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
@@ -50,7 +49,7 @@ else {
             # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
             $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
             Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
-            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($fileVersion) /p:PlatformToolset=v145"
+            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=v145"
 
             if (Test-Path -Path $AssemblyPath -PathType Leaf) {
                 Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
