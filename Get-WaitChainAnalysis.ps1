@@ -26,42 +26,37 @@ if (-not ([System.OperatingSystem]::IsWindows())) {
     # TODO: Figure out the Linux equivalent and implement that here.
 }
 else {
-    $flavours = "Enterprise", "Developer", "Community"
-    # VS2026
-    foreach ($flavour in $flavours){
-        # VS2026
-        if (Test-Path -Path "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
-            Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour) for Visual Studio 2026. Attempting to build the UnmanagedDebugging.dll..."
+    if (Test-Path -Path "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
+        Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour) for Visual Studio 2026. Attempting to build the UnmanagedDebugging.dll..."
 
-            $vsDevCmdPath = "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
-            $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
+        $vsDevCmdPath = "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
+        $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
 
-            if ($x64) {
-                $arch = "x64"
-                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
-            }
-            elseif ($x86) {
-                $arch = "Win32"
-                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)Win32$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
-            }
-            else {
-                Write-Error -Message "Currently unsupported architecture. Did you plan for this?"
-                break
-            }
+        if ($x64) {
+            $arch = "x64"
+            $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
+        }
+        elseif ($x86) {
+            $arch = "Win32"
+            $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)Win32$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
+        }
+        else {
+            Write-Error -Message "Currently unsupported architecture. Did you plan for this?"
+            break
+        }
 
-            # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
-            $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
-            Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
-            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=v145"
+        # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
+        $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
+        Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
+        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=v145"
 
-            if (Test-Path -Path $AssemblyPath -PathType Leaf) {
-                Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
-                $AssemblyBuilt = $true
-                break
-            }
-            else {
-                Write-Warning -Message "Build may have failed — DLL not found at expected path. Trying next flavour..."
-            }
+        if (Test-Path -Path $AssemblyPath -PathType Leaf) {
+            Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
+            $AssemblyBuilt = $true
+            break
+        }
+        else {
+            Write-Warning -Message "Build may have failed — DLL not found at expected path. Trying next flavour..."
         }
     }
 }
