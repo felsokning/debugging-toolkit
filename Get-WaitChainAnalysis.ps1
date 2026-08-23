@@ -15,6 +15,9 @@ Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) 
 $buildVersion = $([System.Environment]::OSVersion.Version.ToString())
 Write-Host -ForegroundColor Green "OS BuildVersion: $($buildVersion)"
 
+$installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
+write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
+
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
 $AssemblyPath = [string]::Empty
@@ -28,7 +31,7 @@ else {
     foreach ($flavour in $flavours){
         # VS2026
         if (Test-Path -Path "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
-            Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
+            Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour) for Visual Studio 2026. Attempting to build the UnmanagedDebugging.dll..."
 
             $vsDevCmdPath = "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
             $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
