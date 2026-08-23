@@ -27,9 +27,14 @@ else {
             if ($x64) {
                 $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x64 })
                 # Wait for the build job to finish
-                while($($buildJob.State -ne "Completed") -or $($buildJob.State -ne "Failed")) {
+                while($($buildJob.State -ne "Completed") -and $($buildJob.State -ne "Failed")) {
                     Write-Host "Waiting 5 seconds for the build job to complete... State: $($buildJob.State)"
                     Start-Sleep -Seconds 5
+                }
+
+                if ($buildJob.State -eq "Failed") {
+                    Write-Error -Message "Build job failed. Please check the build logs for details."
+                    break;
                 }
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
@@ -39,9 +44,14 @@ else {
                 Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
                 $buildJob = $(Start-Job -ScriptBlock { "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"; msbuild "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj" $($directorySeparator)p:configuration=release $($directorySeparator)p:platform=x86 })
                 # Wait for the build job to finish
-                while($($buildJob.State -ne "Completed") -or $($buildJob.State -ne "Failed")) {
+                while($($buildJob.State -ne "Completed") -and $($buildJob.State -ne "Failed")) {
                     Write-Host "Waiting 5 seconds for the build job to complete... State: $($buildJob.State)"
                     Start-Sleep -Seconds 5
+                }
+
+                if ($buildJob.State -eq "Failed") {
+                    Write-Error -Message "Build job failed. Please check the build logs for details."
+                    break;
                 }
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x86$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
