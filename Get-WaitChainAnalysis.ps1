@@ -38,11 +38,6 @@ else {
                     break;
                 }
 
-                $buildCppJob | Format-List
-                $result = $(Receive-Job -Job $buildCppJob)
-                Write-Host -ForegroundColor Green "Build job completed successfully. Output:"
-                $result
-
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
                 break;
             }
@@ -118,11 +113,9 @@ else
     $processOBj = [System.Diagnostics.Process]::GetProcessesByName($Process)
     if($processOBj.Count -gt 0)
     {
-        $processObj
         $sb = @()
         foreach($po in $processOBj)
         {
-            $po
             $sb += [Testing.Debug]::GetThreadWaitChainManaged($po.Id)
         }
         return $sb
