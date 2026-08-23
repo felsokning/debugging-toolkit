@@ -109,7 +109,7 @@ else
     $processOBj = [System.Diagnostics.Process]::GetProcessesByName($Process)
     if($processOBj.Count -gt 0)
     {
-        $processObj | Get-Member -MemberType NoteProperty
+        $processObj
         $sb = @()
         foreach($po in $processOBj)
         {
