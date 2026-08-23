@@ -81,7 +81,7 @@ $Source = @"
             {
                 IntPtr returnIntPtr = IntPtr.Zero;
                 returnIntPtr = ExternalEntry(id);
-                if(returnIntPtr != null && returnIntPtr != IntPtr.Zero)
+                if(returnIntPtr != IntPtr.Zero)
                 {
                     return Marshal.PtrToStringUni(returnIntPtr);
                 }
