@@ -5,13 +5,21 @@ on:
         types: [opened, reopened, edited, synchronize, ready_for_review]
 
 jobs:
-  build:
+  build-on-2026:
     runs-on: windows-2025-vs2026
     steps:
         - name: Check out code
           uses: actions/checkout@v7
-        # - name: Add msbuild to PATH
-        #   uses: microsoft/setup-msbuild@v3
+        - name: Test PowerShell JIT'ing
+          run: |
+            .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
+          shell: pwsh
+          working-directory: ${{ github.workspace }}
+  build-on-2023:
+    runs-on: windows-2022
+    steps:
+        - name: Check out code
+          uses: actions/checkout@v7
         - name: Test PowerShell JIT'ing
           run: |
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64

@@ -9,7 +9,8 @@ param(
     [switch]$x86
 )
 
-Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $([System.Environment]::OSVersion.VersionString)"
+$osVersionString = $([System.Environment]::OSVersion.VersionString)
+Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $($osVersionString)"
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
@@ -45,7 +46,7 @@ else {
             # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
             $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
             Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
-            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch"
+            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($osVersionString) /p:PlatformToolset=v145"
 
             if (Test-Path -Path $AssemblyPath -PathType Leaf) {
                 Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
