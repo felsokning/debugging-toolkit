@@ -77,7 +77,7 @@ $Source = @"
             [DllImport(@"$($AssemblyPath)")]
             public static extern IntPtr WctEntry(int id);
 
-            public static string GetThreadWaitChain(int id)
+            public static string GetThreadWaitChainManaged(int id)
             {
                 IntPtr returnIntPtr = IntPtr.Zero;
                 returnIntPtr = WctEntry(id);
@@ -102,7 +102,7 @@ Add-Type -TypeDefinition $Source -Language CSharp -ReferencedAssemblies System.R
 [int]$targetInt = 0
 if([int]::TryParse($Process, [ref]$targetInt))
 {
-    return [Testing.Debug]::GetThreadWaitChain($targetInt)
+    return [Testing.Debug]::GetThreadWaitChainManaged($targetInt)
 }
 else
 {
@@ -114,7 +114,7 @@ else
         foreach($po in $processOBj)
         {
             $po
-            $sb += [Testing.Debug]::GetThreadWaitChain($po.Id)
+            $sb += [Testing.Debug]::GetThreadWaitChainManaged($po.Id)
         }
         return $sb
     }
