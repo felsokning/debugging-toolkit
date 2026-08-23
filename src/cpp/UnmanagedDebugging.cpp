@@ -419,10 +419,10 @@ Routine Description:
 	if (GrantDebugPrivilege())
 	{
 		process_handle = GetProcessHandle(proc_id);
-		if (process_handle != nullptr || process_handle != INVALID_HANDLE_VALUE)
+		if (process_handle != nullptr && process_handle != INVALID_HANDLE_VALUE)
 		{
 			process_snap_shot_handle = get_process_snap_shot_handle(process_handle);
-			if (process_snap_shot_handle != nullptr || process_snap_shot_handle != INVALID_HANDLE_VALUE)
+			if (process_snap_shot_handle != nullptr && process_snap_shot_handle != INVALID_HANDLE_VALUE)
 			{
 				// Only enumerate threads in the specified process.
 				walk_threads_and_print_chains(process_handle, process_snap_shot_handle);
