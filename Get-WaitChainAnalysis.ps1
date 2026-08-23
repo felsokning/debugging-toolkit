@@ -38,7 +38,7 @@ else {
                     break;
                 }
 
-                $buildCppJob
+                $buildCppJob | Format-List
 
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)unmanagedebugging.dll"
                 break;
@@ -71,8 +71,6 @@ else {
 $AssemblyPath
 
 Test-Path -Path $AssemblyPath -PathType Leaf -ErrorAction Stop
-
-Get-ChildItem -Path $PWD -Recurse
 
 $Source = @"
     namespace Testing
