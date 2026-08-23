@@ -10,8 +10,8 @@ jobs:
     steps:
         - name: Check out code
           uses: actions/checkout@v7
-        - name: Add msbuild to PATH
-          uses: microsoft/setup-msbuild@v3
+        # - name: Add msbuild to PATH
+        #   uses: microsoft/setup-msbuild@v3
         - name: Test PowerShell JIT'ing
           run: |
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64

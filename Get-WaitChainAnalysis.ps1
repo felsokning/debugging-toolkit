@@ -25,42 +25,35 @@ else {
         # VS2026
         if (Test-Path -Path "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
             Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
+
+            $vsDevCmdPath = "C:$($directorySeparator)Program Files$($directorySeparator)Microsoft Visual Studio$($directorySeparator)18$($directorySeparator)$($flavour)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
+            $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
+
             if ($x64) {
-                $buildCppJob = Start-Job -ScriptBlock { "C:$($using:directorySeparator)Program Files$($using:directorySeparator)Microsoft Visual Studio$($using:directorySeparator)18$($using:directorySeparator)$($using:flavour)$($using:directorySeparator)Common7$($using:directorySeparator)Tools$($using:directorySeparator)VsDevCmd.bat" && msbuild "$($using:PWD)$($using:directorySeparator)src$($using:directorySeparator)cpp$($using:directorySeparator)UnmanagedDebugging.vcxproj" -p:configuration=release -p:platform=x64 }
-                # Wait for the build job to finish
-                while($buildCppJob.State -ne "Completed" -and $buildCppJob.State -ne "Failed") {
-                    Write-Host "Waiting 5 seconds for the build job to complete... State: $($buildCppJob.State)"
-                    Start-Sleep -Seconds 5
-                }
-
-                if ($buildCppJob.State -eq "Failed") {
-                    Write-Error -Message "Build job failed. Please check the build logs for details."
-                    break;
-                }
-
+                $arch = "x64"
                 $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
-                break;
             }
             elseif ($x86) {
-                Write-Host -ForegroundColor Green "Found VsDevCmd.bat for $($flavour)"
-                $buildCppJob = Start-Job -ScriptBlock { "C:$($using:directorySeparator)Program Files$($using:directorySeparator)Microsoft Visual Studio$($using:directorySeparator)18$($using:directorySeparator)$($using:flavour)$($using:directorySeparator)Common7$($using:directorySeparator)Tools$($using:directorySeparator)VsDevCmd.bat" && msbuild"$($using:PWD)$($using:directorySeparator)src$($using:directorySeparator)cpp$($using:directorySeparator)UnmanagedDebugging.vcxproj" -p:configuration=release -p:platform=x86 }
-                # Wait for the build job to finish
-                while($buildCppJob.State -ne "Completed" -and $buildCppJob.State -ne "Failed") {
-                    Write-Host "Waiting 5 seconds for the build job to complete... State: $($buildCppJob.State)"
-                    Start-Sleep -Seconds 5
-                }
-
-                if ($buildCppJob.State -eq "Failed") {
-                    Write-Error -Message "Build job failed. Please check the build logs for details."
-                    break;
-                }
-
-                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x86$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
-                break;
+                $arch = "Win32"
+                $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)Win32$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
             }
             else {
                 Write-Error -Message "Currently unsupported architecture. Did you plan for this?"
-                break;
+                break
+            }
+
+            # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
+            $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
+            Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
+            cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch"
+
+            if (Test-Path -Path $AssemblyPath -PathType Leaf) {
+                Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
+                $AssemblyBuilt = $true
+                break
+            }
+            else {
+                Write-Warning -Message "Build may have failed — DLL not found at expected path. Trying next flavour..."
             }
         }
     }
