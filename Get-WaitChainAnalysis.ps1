@@ -13,6 +13,7 @@ Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) 
 
 # Future-proofing for Linux Support (long time aways but better to plan now)
 $directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
+$AssemblyPath = [string]::Empty
 if (-not ([System.OperatingSystem]::IsWindows())) {
     Write-Error -Message "Non-Windows Systems are currently unsupported. Planned for future - when time to invest in researching the API Calls presents itself."
     # TODO: Figure out the Linux equivalent and implement that here.
