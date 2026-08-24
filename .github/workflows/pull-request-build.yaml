@@ -35,13 +35,3 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-  build-on-2019:
-    runs-on: windows-2019
-    steps:
-        - name: Check out code
-          uses: actions/checkout@v7
-        - name: Test PowerShell JIT'ing
-          run: |
-            .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
-          shell: pwsh
-          working-directory: ${{ github.workspace }}
