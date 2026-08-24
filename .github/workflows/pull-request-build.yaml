@@ -5,7 +5,7 @@ on:
         types: [opened, reopened, edited, synchronize, ready_for_review]
 
 jobs:
-  build-on-2026:
+  build-on-2025-vs2026:
     runs-on: windows-2025-vs2026
     steps:
         - name: Check out code
@@ -15,7 +15,7 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-  build-on-2025:
+  build-on-2025-vs2023:
     runs-on: windows-2025
     steps:
         - name: Check out code
@@ -25,7 +25,7 @@ jobs:
             .\Get-WaitChainAnalysis.ps1 -Process "pwsh" -x64
           shell: pwsh
           working-directory: ${{ github.workspace }}
-  build-on-2022:
+  build-on-2022-vs2023:
     runs-on: windows-2022
     steps:
         - name: Check out code
