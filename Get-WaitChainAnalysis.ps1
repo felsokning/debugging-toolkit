@@ -1,0 +1,137 @@
+param(
+    [ValidateNotNullOrWhitespace()]
+    [Parameter(ParameterSetName = 'x64')]
+    [Parameter(ParameterSetName = 'x86')]
+    [string]$Process,
+    [Parameter(ParameterSetName = 'x64')]
+    [switch]$x64,
+    [Parameter(ParameterSetName = 'x86')]
+    [switch]$x86
+)
+
+$osVersionString = $([System.Environment]::OSVersion.VersionString)
+Write-Host -ForegroundColor Green "Starting Wait Chain Analysis for $($Process) on $($osVersionString)"
+
+$buildVersion = $([System.Environment]::OSVersion.Version.ToString())
+Write-Host -ForegroundColor Green "OS BuildVersion: $($buildVersion)"
+
+$toolset = [string]::Empty
+
+$installationPath = $(vswhere.exe -prerelease -latest -property installationPath)
+Write-Host -ForegroundColor Green "Visual Studio Installation Path: $($installationPath)"
+
+if ($installationPath.Contains("18"))
+{
+    Write-Host -ForegroundColor Green "Visual Studio 2026 detected. Using v145 toolset."
+    $buildVersion = "10.0.26100.0"
+    $toolset = "v145"
+}
+
+if($installationPath.Contains("2022"))
+{
+    Write-Host -ForegroundColor Green "Visual Studio 2022 detected. Using v143 toolset."
+    $buildVersion = "10.0.22621.0"
+    $toolset = "v143"
+}
+
+# Future-proofing for Linux Support (long time aways but better to plan now)
+$directorySeparator = $([System.IO.Path]::DirectorySeparatorChar)
+$AssemblyPath = [string]::Empty
+if (-not ([System.OperatingSystem]::IsWindows())) {
+    Write-Error -Message "Non-Windows Systems are currently unsupported. Planned for future - when time to invest in researching the API Calls presents itself."
+    # TODO: Figure out the Linux equivalent and implement that here.
+}
+else {
+    if (Test-Path -Path "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat") {
+        Write-Host -ForegroundColor Green "Found VsDevCmd.bat for Visual Studio. Attempting to build the UnmanagedDebugging.dll..."
+
+        $vsDevCmdPath = "$($installationPath)$($directorySeparator)Common7$($directorySeparator)Tools$($directorySeparator)VsDevCmd.bat"
+        $projectPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)UnmanagedDebugging.vcxproj"
+
+        if ($x64) {
+            $arch = "x64"
+            $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)x64$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
+        }
+        elseif ($x86) {
+            $arch = "Win32"
+            $AssemblyPath = "$($PWD)$($directorySeparator)src$($directorySeparator)cpp$($directorySeparator)Win32$($directorySeparator)release$($directorySeparator)UnmanagedDebugging.dll"
+        }
+        else {
+            Write-Error -Message "Currently unsupported architecture. Did you plan for this?"
+            break
+        }
+
+        # Run VsDevCmd.bat and msbuild in the same CMD session so environment variables persist
+        $buildCommand = "& VsDevCmd.bat && cd /d & msbuild & exit"
+        Write-Host -ForegroundColor Yellow "Building project (this may take a moment)..."
+        cmd.exe /c "`"$vsDevCmdPath`" && msbuild `"$projectPath`" /p:Configuration=Release /p:Platform=$arch /p:WindowsTargetPlatformVersion=$($buildVersion) /p:PlatformToolset=$($toolset)"
+
+        if (Test-Path -Path $AssemblyPath -PathType Leaf) {
+            Write-Host -ForegroundColor Green "Build completed successfully: $AssemblyPath"
+            $AssemblyBuilt = $true
+        }
+        else {
+            Write-Warning -Message "Build may have failed — DLL not found at expected path. Trying next flavour..."
+        }
+    }
+}
+
+$AssemblyPath
+
+Test-Path -Path $AssemblyPath -PathType Leaf -ErrorAction Stop
+
+$Source = @"
+    namespace Testing
+    {
+        using System;
+        using System.Runtime.InteropServices;
+
+        public static class Debug
+        {
+            [DllImport(@"$($AssemblyPath)")]
+            public static extern IntPtr WctEntry(int id);
+
+            public static string GetThreadWaitChainManaged(int id)
+            {
+                IntPtr returnIntPtr = IntPtr.Zero;
+                returnIntPtr = WctEntry(id);
+                if(returnIntPtr != IntPtr.Zero)
+                {
+                    return Marshal.PtrToStringUni(returnIntPtr);
+                }
+                else
+                {
+                    return "Something is not working";
+                }
+            }
+        }
+    }
+"@
+
+Add-Type -TypeDefinition $Source -Language CSharp -ReferencedAssemblies System.Runtime
+
+# TODO: IIS Instances via the API for finding the Instance's Name to PID translation.
+
+# First, we check that the parameter we were given is an int, if not, proceed as a string
+[int]$targetInt = 0
+if([int]::TryParse($Process, [ref]$targetInt))
+{
+    return [Testing.Debug]::GetThreadWaitChainManaged($targetInt)
+}
+else
+{
+    $processOBj = [System.Diagnostics.Process]::GetProcessesByName($Process)
+    if($processOBj.Count -gt 0)
+    {
+        $sb = @()
+        foreach($po in $processOBj)
+        {
+            $sb += [Testing.Debug]::GetThreadWaitChainManaged($po.Id)
+        }
+        return $sb
+    }
+    else
+    {
+        return "No process can be found with the name given: $($Process)"
+    }
+}
